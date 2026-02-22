@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Analyst Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f0f4f8;
+    --surface: #ffffff;
+    --surface2: #f7fafc;
+    --border: #e2e8f0;
+    --accent: #0d9488;
+    --accent2: #d97706;
+    --accent3: #4f46e5;
+    --accent4: #e11d48;
+    --text: #1a202c;
+    --muted: #718096;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background: radial-gradient(ellipse 60% 40% at 20% 10%, rgba(13,148,136,0.05) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 30% at 80% 80%, rgba(79,70,229,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 50% at 60% 30%, rgba(217,119,6,0.03) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+  .container { max-width: 780px; margin: 0 auto; padding: 24px 16px 80px; position: relative; z-index: 1; }
+
+  /* HEADER */
+  .header { text-align: center; margin-bottom: 24px; animation: fadeDown 0.6s ease both; }
+  .header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(13,148,136,0.08); border: 1px solid rgba(13,148,136,0.2); border-radius: 100px; padding: 4px 14px; font-size: 12px; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; font-weight: 600; }
+  h1 { font-family: 'Syne', sans-serif; font-size: clamp(24px, 5vw, 36px); font-weight: 800; background: linear-gradient(135deg, #1a202c 30%, var(--accent3) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.1; margin-bottom: 6px; }
+  .header-sub { color: var(--muted); font-size: 14px; }
+
+  /* CLOCK ROW */
+  .clock-row { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 14px 20px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; animation: fadeUp 0.5s ease 0.05s both; flex-wrap: wrap; gap: 8px; box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
+  .clock-time { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--accent2); letter-spacing: 2px; }
+  .clock-date { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .live-pill-top { display: inline-flex; align-items: center; gap: 5px; background: rgba(217,119,6,0.1); border: 1px solid rgba(217,119,6,0.25); border-radius: 100px; padding: 4px 12px; font-size: 11px; color: var(--accent2); font-weight: 600; }
+  .live-dot-small { width: 6px; height: 6px; background: var(--accent2); border-radius: 50%; animation: pulseDot 1.5s infinite; display: inline-block; }
+
+  /* NOW BANNER */
+  .now-banner { border-radius: 20px; overflow: hidden; margin-bottom: 16px; animation: fadeUp 0.5s ease 0.1s both; box-shadow: 0 6px 24px rgba(79,70,229,0.15); }
+  .now-banner-top { background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%); padding: 12px 18px 10px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.12); }
+  .live-pill { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.2); border-radius: 100px; padding: 4px 12px; font-size: 11px; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
+  .live-dot { width: 7px; height: 7px; background: #6ee7b7; border-radius: 50%; animation: pulseDot 1.5s infinite; display: inline-block; }
+  .now-section-tag { font-size: 11px; color: rgba(255,255,255,0.7); font-weight: 600; }
+  .now-banner-main { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); padding: 14px 18px 16px; }
+  .now-task-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: #fff; line-height: 1.3; margin-bottom: 12px; }
+  .now-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .now-chip { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.18); border-radius: 100px; padding: 5px 12px; font-size: 12px; font-weight: 600; color: #fff; }
+  .now-chip.green { background: rgba(110,231,183,0.25); color: #d1fae5; }
+  .now-banner-foot { background: #3730a3; padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid rgba(255,255,255,0.2); }
+  .next-label { font-size: 10px; color: #c7d2fe; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px; }
+  .next-name { font-size: 13px; color: #ffffff; font-weight: 700; }
+  .ring-wrap { position: relative; width: 52px; height: 52px; flex-shrink: 0; }
+  .ring-wrap svg { transform: rotate(-90deg); }
+  .ring-bg  { fill: none; stroke: rgba(255,255,255,0.2); stroke-width: 4; }
+  .ring-arc { fill: none; stroke: #6ee7b7; stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
+  .ring-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #6ee7b7; }
+
+  /* SLEEP CLOCKS */
+  .sleep-clocks { display: none; gap: 10px; margin-bottom: 16px; animation: fadeUp 0.4s ease both; }
+  .sleep-clocks.show { display: flex; }
+  .sc-card { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 14px 10px; text-align: center; border-top: 3px solid transparent; box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
+  .sc-card.c1 { border-top-color: #6366f1; }
+  .sc-card.c2 { border-top-color: #0d9488; }
+  .sc-card.c3 { border-top-color: #d97706; }
+  .sc-icon { font-size: 22px; margin-bottom: 6px; }
+  .sc-val { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+  .sc-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+  /* PROGRESS */
+  .progress-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 20px 24px; margin-bottom: 16px; animation: fadeUp 0.5s ease 0.15s both; box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
+  .progress-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .progress-label { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: var(--text); }
+  .progress-pct { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--accent3); }
+  .progress-bar-wrap { background: #e2e8f0; border-radius: 100px; height: 10px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; border-radius: 100px; background: linear-gradient(90deg, var(--accent), var(--accent3)); transition: width 0.6s cubic-bezier(.4,0,.2,1); width: 0%; }
+  .stats-row { display: flex; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+  .stat-chip { flex: 1; min-width: 80px; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; text-align: center; }
+  .stat-num { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; display: block; }
+  .stat-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* QUOTE */
+  .quote-card { background: #f0fdfa; border: 1px solid rgba(13,148,136,0.2); border-radius: 16px; padding: 14px 18px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 10px; animation: fadeUp 0.5s ease 0.2s both; }
+  .quote-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+  .quote-text { font-size: 13px; color: #0f766e; font-style: italic; line-height: 1.5; font-weight: 500; }
+
+  /* WEEKLY */
+  .weekly-strip { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; animation: fadeUp 0.5s ease 0.25s both; }
+  .weekly-strip::-webkit-scrollbar { display: none; }
+  .day-chip { flex-shrink: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 8px 12px; text-align: center; min-width: 88px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+  .day-chip.today { border-color: var(--accent3); background: #eef2ff; }
+  .day-name { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .day-chip.today .day-name { color: var(--accent3); }
+  .day-topic { font-size: 11px; line-height: 1.3; color: var(--text); }
+
+  /* ACTIONS */
+  .actions-row { display: flex; justify-content: flex-end; margin-bottom: 16px; animation: fadeUp 0.5s ease 0.3s both; }
+  .btn-reset { display: flex; align-items: center; gap: 8px; background: #fff1f2; border: 1px solid #fecdd3; color: var(--accent4); border-radius: 12px; padding: 9px 18px; font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+  .btn-reset:hover { background: #ffe4e6; }
+
+  /* SECTIONS */
+  .section { margin-bottom: 14px; animation: fadeUp 0.5s ease both; }
+  .section-header { display: flex; align-items: center; gap: 10px; padding: 12px 18px; border-radius: 14px 14px 0 0; cursor: pointer; user-select: none; transition: opacity 0.2s; }
+  .section-header:hover { opacity: 0.92; }
+  .section-emoji { font-size: 18px; }
+  .section-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; flex: 1; }
+  .section-time-badge { font-size: 11px; opacity: 0.75; background: rgba(0,0,0,0.12); padding: 2px 8px; border-radius: 100px; }
+  .section-chevron { font-size: 12px; transition: transform 0.3s; }
+  .section.collapsed .section-chevron { transform: rotate(-90deg); }
+  .section-body { background: var(--surface); border: 1px solid var(--border); border-top: none; border-radius: 0 0 14px 14px; overflow: hidden; max-height: 1000px; opacity: 1; transition: max-height 0.4s cubic-bezier(.4,0,.2,1), opacity 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .section.collapsed .section-body { max-height: 0; opacity: 0; }
+
+  /* TASKS */
+  .task-item { display: flex; align-items: flex-start; gap: 14px; padding: 14px 18px; border-bottom: 1px solid #f0f4f8; cursor: pointer; transition: background 0.2s; }
+  .task-item:last-child { border-bottom: none; }
+  .task-item:hover { background: #fafbfc; }
+  .task-item.done { background: #f0fdf4; }
+  .task-item.active-now { background: #fffbeb; border-left: 3px solid var(--accent2); }
+  .checkbox { width: 22px; height: 22px; border-radius: 7px; border: 2px solid #cbd5e0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; transition: all 0.2s; background: #fff; }
+  .task-item.done .checkbox { background: #10b981; border-color: #10b981; }
+  .checkbox-tick { color: #fff; font-size: 13px; font-weight: 900; opacity: 0; transition: opacity 0.2s; }
+  .task-item.done .checkbox-tick { opacity: 1; }
+  .task-content { flex: 1; }
+  .task-time { font-size: 11px; color: var(--muted); font-weight: 600; margin-bottom: 3px; font-family: 'Syne', sans-serif; }
+  .task-name { font-size: 14px; font-weight: 500; line-height: 1.4; color: var(--text); transition: color 0.2s; }
+  .task-item.done .task-name { color: #a0aec0; text-decoration: line-through; text-decoration-color: #a0aec0; }
+  .task-note { font-size: 12px; color: var(--muted); margin-top: 3px; font-style: italic; }
+  @keyframes checkPop { 0% { transform: scale(1); } 40% { transform: scale(1.25); } 100% { transform: scale(1); } }
+  .task-item.just-done .checkbox { animation: checkPop 0.3s ease; }
+
+  /* SECTION COLORS — light pastel versions */
+  .s-morning .section-header { background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #065f46; }
+  .s-study1  .section-header { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; }
+  .s-study2  .section-header { background: linear-gradient(135deg, #ede9fe, #ddd6fe); color: #4c1d95; }
+  .s-lunch   .section-header { background: linear-gradient(135deg, #ccfbf1, #99f6e4); color: #134e4a; }
+  .s-study3  .section-header { background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #14532d; }
+  .s-evening .section-header { background: linear-gradient(135deg, #ffedd5, #fed7aa); color: #7c2d12; }
+  .s-study4  .section-header { background: linear-gradient(135deg, #ffe4e6, #fecdd3); color: #881337; }
+  .s-night   .section-header { background: linear-gradient(135deg, #ede9fe, #c4b5fd); color: #3b0764; }
+  .s-sleep   .section-header { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #1e3a8a; }
+
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeUp   { from { opacity: 0; transform: translateY(16px);  } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulseDot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.6); opacity: 0.5; } }
+
+  @media (max-width: 500px) { .now-task-title { font-size: 15px; } .clock-row { flex-direction: column; align-items: flex-start; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-badge">📊 Data Analyst Journey</div>
+    <h1>Aaj Ka Routine Tracker</h1>
+    <div class="header-sub">Har task complete karo — ek kadam ek baar mein 🎯</div>
+  </div>
+
+  <div class="clock-row">
+    <div>
+      <div class="clock-time" id="clock">--:--:--</div>
+      <div class="clock-date" id="dateStr"></div>
+    </div>
+    <div class="live-pill-top"><span class="live-dot-small"></span> LIVE</div>
+  </div>
+
+  <div class="now-banner">
+    <div class="now-banner-top">
+      <div class="live-pill"><span class="live-dot"></span> ABHI KARO</div>
+      <div class="now-section-tag" id="nowSectionTag">—</div>
+    </div>
+    <div class="now-banner-main">
+      <div class="now-task-title" id="nowTaskTitle">Loading...</div>
+      <div class="now-chips">
+        <div class="now-chip">🕐 <span id="nowFrom">—</span></div>
+        <div class="now-chip">🕔 <span id="nowTo">—</span></div>
+        <div class="now-chip">⏱️ <span id="nowTotal">—</span></div>
+        <div class="now-chip green">⏳ <span id="nowLeft">—</span> baaki</div>
+      </div>
+    </div>
+    <div class="now-banner-foot">
+      <div>
+        <div class="next-label">Aage Kya Hai</div>
+        <div class="next-name" id="nowNext">—</div>
+      </div>
+      <div class="ring-wrap">
+        <svg width="52" height="52" viewBox="0 0 52 52">
+          <circle class="ring-bg" cx="26" cy="26" r="22"/>
+          <circle class="ring-arc" cx="26" cy="26" r="22" id="ringArc" stroke-dasharray="138.2" stroke-dashoffset="138.2"/>
+        </svg>
+        <div class="ring-pct" id="ringPct">0%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sleep-clocks" id="sleepClocks">
+    <div class="sc-card c1"><div class="sc-icon">🌙</div><div class="sc-val">10:00 PM</div><div class="sc-lbl">Sone Ka Waqt</div></div>
+    <div class="sc-card c2"><div class="sc-icon">☀️</div><div class="sc-val">6:00 AM</div><div class="sc-lbl">Uthne Ka Waqt</div></div>
+    <div class="sc-card c3"><div class="sc-icon">⏰</div><div class="sc-val">8 Ghante</div><div class="sc-lbl">Poori Neend</div></div>
+  </div>
+
+  <div class="progress-card">
+    <div class="progress-top">
+      <div class="progress-label">Aaj Ka Progress</div>
+      <div class="progress-pct" id="pctText">0%</div>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill"></div></div>
+    <div class="stats-row">
+      <div class="stat-chip"><span class="stat-num" id="doneCount" style="color:var(--accent)">0</span><span class="stat-lbl">Complete ✅</span></div>
+      <div class="stat-chip"><span class="stat-num" id="leftCount" style="color:var(--accent2)">0</span><span class="stat-lbl">Baaki ⏳</span></div>
+      <div class="stat-chip"><span class="stat-num" id="totalCount" style="color:var(--accent3)">0</span><span class="stat-lbl">Total 📋</span></div>
+    </div>
+  </div>
+
+  <div class="quote-card">
+    <div class="quote-icon">✨</div>
+    <div class="quote-text" id="quoteText"></div>
+  </div>
+
+  <div class="weekly-strip" id="weeklyStrip"></div>
+
+  <div class="actions-row">
+    <button class="btn-reset" onclick="resetDay()">🔄 Naya Din Reset Karo</button>
+  </div>
+
+  <div id="scheduleContainer"></div>
+</div>
+
+<script>
+const SCHEDULE = [
+  { id:'s-morning', label:'SUBAH — Morning Routine', emoji:'🌅', cls:'s-morning', timeRange:'6:00 – 7:25 AM', startMin:360, endMin:445,
+    tasks:[
+      {id:'t1', time:'6:00 AM', name:'Uthna + Fresh Water + Stretching', note:'5 min, fresh start!'},
+      {id:'t2', time:'6:05 AM', name:'Yoga / Light Exercise', note:'30 min — body aur mind dono taiyaar'},
+      {id:'t3', time:'6:35 AM', name:'Nahana + Taiyaar Hona', note:'Fresh feel = better focus'},
+      {id:'t4', time:'7:00 AM', name:'Breakfast 🍳', note:'Poha / Eggs / Daliya / Fruits'},
+      {id:'t5', time:'7:20 AM', name:'Aaj Ka Plan Review', note:'5 min — kya padna hai decide karo'},
+    ]},
+  { id:'s-study1', label:'STUDY BLOCK 1 — Peak Focus', emoji:'📚', cls:'s-study1', timeRange:'7:30 – 10:30 AM', startMin:450, endMin:630,
+    tasks:[
+      {id:'t6', time:'7:30 AM', name:'Deep Concept Study + Notes', note:'SQL / Python — hardest topics sabse pehle'},
+      {id:'t7', time:'9:00 AM', name:'☕ Break — Paani piyo, aankhein band karo', note:'10 min rest'},
+      {id:'t8', time:'9:10 AM', name:'Hands-on Practice', note:'Code likhna, SQL queries banana'},
+    ]},
+  { id:'s-break1', label:'Snack Break', emoji:'🍎', cls:'s-study1', timeRange:'10:30 – 10:45 AM', startMin:630, endMin:645,
+    tasks:[{id:'t9', time:'10:30 AM', name:'Snack + Screen se door jao', note:'Eyes rest karo!'}]},
+  { id:'s-study2', label:'STUDY BLOCK 2 — Concepts & Visualization', emoji:'📊', cls:'s-study2', timeRange:'10:45 AM – 1:00 PM', startMin:645, endMin:780,
+    tasks:[
+      {id:'t10', time:'10:45 AM', name:'Statistics / Power BI / Tableau — Concepts', note:'Notes banana important hai'},
+      {id:'t11', time:'11:45 AM', name:'💧 Break — Paani piyo', note:'10 min'},
+      {id:'t12', time:'11:55 AM', name:'Case Study / Visualization Practice', note:'Real data dekho'},
+    ]},
+  { id:'s-lunch', label:'LUNCH + REST', emoji:'🍱', cls:'s-lunch', timeRange:'1:00 – 2:30 PM', startMin:780, endMin:870,
+    tasks:[
+      {id:'t13', time:'1:00 PM', name:'Lunch 🍱', note:'Daal, roti, sabzi, salad — nutritious khao'},
+      {id:'t14', time:'1:30 PM', name:'Light Walk / Relax', note:'Bahar ghoomna — fresh air lo'},
+      {id:'t15', time:'2:00 PM', name:'😴 Power Nap', note:'30 min — brain recharge hoga'},
+    ]},
+  { id:'s-study3', label:'STUDY BLOCK 3 — Projects & Interview Prep', emoji:'💻', cls:'s-study3', timeRange:'2:30 – 5:00 PM', startMin:870, endMin:1020,
+    tasks:[
+      {id:'t16', time:'2:30 PM', name:'Kaggle / Real Dataset / Project Work', note:'Hands-on sabse zaroori hai'},
+      {id:'t17', time:'3:45 PM', name:'💧 Break', note:'10 min'},
+      {id:'t18', time:'3:55 PM', name:'Interview Prep — SQL + Case Studies + HR', note:'Practice aloud karo'},
+    ]},
+  { id:'s-evening', label:'EVENING FREE TIME 🎉', emoji:'🌤️', cls:'s-evening', timeRange:'5:00 – 7:30 PM', startMin:1020, endMin:1170,
+    tasks:[
+      {id:'t19', time:'5:00 PM', name:'Walk + Chai ☕', note:'Full recharge — NO study!'},
+      {id:'t20', time:'5:30 PM', name:'Family Time / Hobby / Music', note:'Mind ko breathe karne do'},
+      {id:'t21', time:'6:30 PM', name:'Relax — phone scroll allowed 😄', note:'Guilt free time'},
+    ]},
+  { id:'s-study4', label:'STUDY BLOCK 4 — Revision', emoji:'🔁', cls:'s-study4', timeRange:'7:30 – 8:10 PM', startMin:1170, endMin:1210,
+    tasks:[
+      {id:'t22', time:'7:30 PM', name:'Aaj Ka Revision + Notes Review + Weak Topics', note:'Jo nahi samajh aaya usse dobara dekho'},
+      {id:'t23', time:'7:55 PM', name:'YouTube Concept Video (Passive learning)', note:'Relaxed mode mein dekho'},
+    ]},
+  { id:'s-night', label:'RAAT KA ROUTINE', emoji:'🌙', cls:'s-night', timeRange:'8:10 PM – 9:50 PM', startMin:1210, endMin:1430,
+    tasks:[
+      {id:'t24', time:'8:10 PM', name:'Data Blogs / Articles — Light reading', note:'No heavy study — just explore'},
+      {id:'t25', time:'8:45 PM', name:'📝 Kal Ka To-Do List Banana', note:'15 min planning saves hours'},
+      {id:'t26', time:'9:00 PM', name:'🍽️ Dinner', note:'Light khao raat ko'},
+      {id:'t27', time:'9:30 PM', name:'Family / Music / Relax', note:'Wind down slowly'},
+      {id:'t28', time:'9:50 PM', name:'🧘 Meditation + Deep Breathing', note:'Phone band karo — 10 min silence'},
+    ]},
+  { id:'s-sleep', label:'NEEND 😴 — 8 Ghante', emoji:'🌟', cls:'s-sleep', timeRange:'10:00 PM – 6:00 AM', startMin:1320, endMin:1800,
+    tasks:[{id:'t29', time:'10:00 PM', name:'So jao — 8 ghante ki neend 😴', note:'Brain consolidate karega jo aaj padha! Kal phir ready!'}]},
+];
+
+const WEEKLY = [
+  {day:'Mon', topic:'SQL — Joins, Subqueries'},
+  {day:'Tue', topic:'Python — Pandas, NumPy'},
+  {day:'Wed', topic:'Statistics + Probability'},
+  {day:'Thu', topic:'Power BI / Tableau'},
+  {day:'Fri', topic:'Excel + Data Cleaning'},
+  {day:'Sat', topic:'Projects + Kaggle'},
+  {day:'Sun', topic:'Revision + Rest 😌'},
+];
+
+const QUOTES = [
+  "Consistency hi success ki key hai. Ek din ek kadam! 🎯",
+  "Data analyst banna ek process hai — aaj ka effort kal ka result banega. 💪",
+  "Jo aaj seekhoge, woh interview mein kaam aayega. Keep going! 🚀",
+  "Thoda thoda roz padho — bada change aata hai. Believe in the process! ✨",
+  "SQL aur Python dono seekhna hai? Ek ek block ek ek din! 📊",
+  "Har revision ek naya layer add karta hai dimag mein. Revise karo! 🧠",
+  "Break lena laziness nahi, strategy hai. Refresh karo, phir padho! ☕",
+];
+
+const storageKey = 'da_tracker_v3_' + new Date().toDateString();
+let checked = JSON.parse(localStorage.getItem(storageKey) || '{}');
+
+function parseTime(str) {
+  const m = str.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  if (!m) return 0;
+  let h = parseInt(m[1]), mn = parseInt(m[2]);
+  if (m[3].toUpperCase() === 'PM' && h !== 12) h += 12;
+  if (m[3].toUpperCase() === 'AM' && h === 12) h = 0;
+  return h * 60 + mn;
+}
+
+function fmtMin(t) {
+  const h24 = Math.floor(t / 60), mn = t % 60;
+  const ap = h24 >= 12 ? 'PM' : 'AM';
+  const h12 = h24 % 12 || 12;
+  return h12 + ':' + String(mn).padStart(2,'0') + ' ' + ap;
+}
+
+function fmtDur(mins) {
+  if (mins <= 0) return '0 min';
+  const h = Math.floor(mins / 60), m = mins % 60;
+  if (h > 0 && m > 0) return h + 'h ' + m + 'min';
+  if (h > 0) return h + ' ghante';
+  return m + ' min';
+}
+
+function renderSchedule() {
+  const container = document.getElementById('scheduleContainer');
+  container.innerHTML = '';
+  SCHEDULE.forEach((section, idx) => {
+    const div = document.createElement('div');
+    div.className = `section ${section.cls}`;
+    div.id = section.id;
+    div.style.animationDelay = (0.05 * idx) + 's';
+    const taskItems = section.tasks.map(task => {
+      const isDone = !!checked[task.id];
+      return `<div class="task-item ${isDone ? 'done' : ''}" id="item-${task.id}" onclick="toggleTask('${task.id}')">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <div class="task-content">
+          <div class="task-time">${task.time}</div>
+          <div class="task-name">${task.name}</div>
+          ${task.note ? `<div class="task-note">${task.note}</div>` : ''}
+        </div></div>`;
+    }).join('');
+    div.innerHTML = `
+      <div class="section-header" onclick="toggleSection('${section.id}')">
+        <span class="section-emoji">${section.emoji}</span>
+        <span class="section-title">${section.label}</span>
+        <span class="section-time-badge">${section.timeRange}</span>
+        <span class="section-chevron">▾</span>
+      </div>
+      <div class="section-body">${taskItems}</div>`;
+    container.appendChild(div);
+  });
+  updateProgress();
+}
+
+function toggleTask(id) {
+  checked[id] = !checked[id];
+  localStorage.setItem(storageKey, JSON.stringify(checked));
+  const item = document.getElementById('item-' + id);
+  if (checked[id]) { item.classList.add('done', 'just-done'); setTimeout(() => item.classList.remove('just-done'), 400); }
+  else item.classList.remove('done');
+  updateProgress();
+}
+
+function toggleSection(id) { document.getElementById(id).classList.toggle('collapsed'); }
+
+function updateProgress() {
+  const all = SCHEDULE.flatMap(s => s.tasks);
+  const total = all.length, done = all.filter(t => checked[t.id]).length;
+  const pct = total ? Math.round(done / total * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('pctText').textContent = pct + '%';
+  document.getElementById('doneCount').textContent = done;
+  document.getElementById('leftCount').textContent = total - done;
+  document.getElementById('totalCount').textContent = total;
+}
+
+function resetDay() {
+  if (!confirm('Aaj ki progress reset karna chahte ho?')) return;
+  checked = {}; localStorage.setItem(storageKey, JSON.stringify(checked)); renderSchedule();
+}
+
+function renderWeekly() {
+  const today = new Date().getDay(), order = [1,2,3,4,5,6,0];
+  const strip = document.getElementById('weeklyStrip');
+  strip.innerHTML = '';
+  order.forEach((d, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'day-chip' + (d === today ? ' today' : '');
+    chip.innerHTML = `<div class="day-name">${WEEKLY[i].day}</div><div class="day-topic">${WEEKLY[i].topic}</div>`;
+    strip.appendChild(chip);
+  });
+  const idx = order.indexOf(today);
+  if (idx >= 0) setTimeout(() => strip.children[idx]?.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'}), 300);
+}
+
+function setQuote() {
+  document.getElementById('quoteText').textContent = '"' + QUOTES[new Date().getDay() % QUOTES.length] + '"';
+}
+
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0');
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('dateStr').textContent = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+
+  const cur = now.getHours() * 60 + now.getMinutes();
+  const CIRC = 138.2;
+
+  SCHEDULE.forEach(s => s.tasks.forEach(t => { const el = document.getElementById('item-' + t.id); if (el) el.classList.remove('active-now'); }));
+  document.getElementById('sleepClocks').classList.remove('show');
+
+  let curSec = null, nextSec = null;
+  for (let i = 0; i < SCHEDULE.length; i++) {
+    if (cur >= SCHEDULE[i].startMin && cur < SCHEDULE[i].endMin) { curSec = SCHEDULE[i]; nextSec = SCHEDULE[i+1] || null; break; }
+  }
+
+  if (curSec) {
+    let curTask = curSec.tasks[0], nextTask = null;
+    for (let i = 0; i < curSec.tasks.length; i++) {
+      if (cur >= parseTime(curSec.tasks[i].time)) { curTask = curSec.tasks[i]; }
+      else { if (!nextTask) nextTask = curSec.tasks[i]; break; }
+    }
+    const tStart = parseTime(curTask.time), tEnd = nextTask ? parseTime(nextTask.time) : curSec.endMin;
+    const dur = tEnd - tStart, elapsed = Math.max(0, cur - tStart), remaining = Math.max(0, tEnd - cur);
+    const pct = Math.min(100, Math.round(elapsed / dur * 100));
+
+    document.getElementById('nowSectionTag').textContent  = curSec.emoji + ' ' + curSec.label;
+    document.getElementById('nowTaskTitle').textContent   = curTask.name;
+    document.getElementById('nowFrom').textContent        = fmtMin(tStart);
+    document.getElementById('nowTo').textContent          = fmtMin(tEnd);
+    document.getElementById('nowTotal').textContent       = fmtDur(dur);
+    document.getElementById('nowLeft').textContent        = fmtDur(remaining);
+    document.getElementById('ringArc').style.strokeDashoffset = CIRC - (CIRC * pct / 100);
+    document.getElementById('ringPct').textContent        = pct + '%';
+    document.getElementById('nowNext').textContent        = nextTask ? nextTask.name + ' (' + fmtMin(parseTime(nextTask.time)) + ')' : (nextSec ? nextSec.emoji + ' ' + nextSec.label + ' (' + fmtMin(nextSec.startMin) + ')' : '🎉 Din khatam!');
+
+    const el = document.getElementById('item-' + curTask.id);
+    if (el) el.classList.add('active-now');
+    if (curSec.id === 's-sleep') document.getElementById('sleepClocks').classList.add('show');
+
+  } else if (cur < SCHEDULE[0].startMin) {
+    const remToWake = SCHEDULE[0].startMin - cur;
+    const sleepCur = cur < 360 ? cur + 1440 : cur;
+    const sleepElapsed = Math.max(0, sleepCur - 1320);
+    const sleepPct = Math.min(100, Math.round(sleepElapsed / 480 * 100));
+    document.getElementById('nowSectionTag').textContent  = 'Neend Ka Waqt 😴';
+    document.getElementById('nowTaskTitle').textContent   = 'So Jao — Subah 6:00 AM se shuru!';
+    document.getElementById('nowFrom').textContent        = '10:00 PM';
+    document.getElementById('nowTo').textContent          = '6:00 AM';
+    document.getElementById('nowTotal').textContent       = '8 Ghante';
+    document.getElementById('nowLeft').textContent        = fmtDur(remToWake);
+    document.getElementById('nowNext').textContent        = '🌅 Subah Ka Routine (6:00 AM)';
+    document.getElementById('ringArc').style.strokeDashoffset = CIRC - (CIRC * sleepPct / 100);
+    document.getElementById('ringPct').textContent        = sleepPct + '%';
+    document.getElementById('sleepClocks').classList.add('show');
+
+  } else {
+    const remToSleep = cur <= 1320 ? 1320 - cur : 0;
+    document.getElementById('nowSectionTag').textContent  = 'Din Khatam! 🎉';
+    document.getElementById('nowTaskTitle').textContent   = '😴 So Jao — Bahut achha kiya aaj!';
+    document.getElementById('nowFrom').textContent        = '10:00 PM';
+    document.getElementById('nowTo').textContent          = '6:00 AM';
+    document.getElementById('nowTotal').textContent       = '8 Ghante';
+    document.getElementById('nowLeft').textContent        = remToSleep > 0 ? fmtDur(remToSleep) : 'Abhi so jao!';
+    document.getElementById('nowNext').textContent        = '😴 Sone ka waqt 10:00 PM';
+    document.getElementById('ringArc').style.strokeDashoffset = remToSleep > 0 ? CIRC : 0;
+    document.getElementById('ringPct').textContent        = remToSleep > 0 ? '—' : '100%';
+    document.getElementById('sleepClocks').classList.add('show');
+  }
+}
+
+renderSchedule(); renderWeekly(); setQuote(); updateClock();
+setInterval(updateClock, 1000);
+</script>
+</body>
+</html>
