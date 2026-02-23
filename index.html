@@ -38,6 +38,7 @@
   /* CLOCK ROW */
   .clock-row { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 14px 20px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; animation: fadeUp 0.5s ease 0.05s both; flex-wrap: wrap; gap: 8px; box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
   .clock-time { font-family: 'Nunito', sans-serif; font-size: 26px; font-weight: 800; color: var(--accent2); letter-spacing: 2px; }
+  .clock-ampm { font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 800; color: var(--accent2); margin-left: 4px; vertical-align: middle; opacity: 0.8; }
   .clock-date { font-size: 12px; color: var(--muted); margin-top: 2px; }
   .live-pill-top { display: inline-flex; align-items: center; gap: 5px; background: rgba(217,119,6,0.1); border: 1px solid rgba(217,119,6,0.25); border-radius: 100px; padding: 4px 12px; font-size: 11px; color: var(--accent2); font-weight: 600; }
   .live-dot-small { width: 6px; height: 6px; background: var(--accent2); border-radius: 50%; animation: pulseDot 1.5s infinite; display: inline-block; }
@@ -163,7 +164,9 @@
 
   <div class="clock-row">
     <div>
-      <div class="clock-time" id="clock">--:--:--</div>
+      <div>
+        <span class="clock-time" id="clock">--:--:--</span><span class="clock-ampm" id="ampm">AM</span>
+      </div>
       <div class="clock-date" id="dateStr"></div>
     </div>
     <div class="live-pill-top"><span class="live-dot-small"></span> LIVE</div>
@@ -415,7 +418,13 @@ function setQuote() {
 
 function updateClock() {
   const now = new Date();
-  document.getElementById('clock').textContent = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0');
+  const h24 = now.getHours();
+  const h12 = h24 % 12 || 12;
+  const ampm = h24 >= 12 ? 'PM' : 'AM';
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const ss = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('clock').textContent = String(h12).padStart(2,'0') + ':' + mm + ':' + ss;
+  document.getElementById('ampm').textContent = ampm;
   const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   document.getElementById('dateStr').textContent = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
