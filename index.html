@@ -281,7 +281,7 @@ const SCHEDULE = [
       {id:'t22', time:'7:30 PM', name:'Aaj Ka Revision + Notes Review + Weak Topics', note:'Jo nahi samajh aaya usse dobara dekho'},
       {id:'t23', time:'7:55 PM', name:'YouTube Concept Video (Passive learning)', note:'Relaxed mode mein dekho'},
     ]},
-  { id:'s-night', label:'RAAT KA ROUTINE', emoji:'🌙', cls:'s-night', timeRange:'8:10 PM – 9:50 PM', startMin:1210, endMin:1430,
+  { id:'s-night', label:'RAAT KA ROUTINE', emoji:'🌙', cls:'s-night', timeRange:'8:10 PM – 9:50 PM', startMin:1210, endMin:1320,
     tasks:[
       {id:'t24', time:'8:10 PM', name:'Data Blogs / Articles — Light reading', note:'No heavy study — just explore'},
       {id:'t25', time:'8:45 PM', name:'📝 Kal Ka To-Do List Banana', note:'15 min planning saves hours'},
@@ -458,7 +458,7 @@ function updateClock() {
     document.getElementById('nowLeft').textContent        = fmtDur(remaining);
     document.getElementById('ringArc').style.strokeDashoffset = CIRC - (CIRC * pct / 100);
     document.getElementById('ringPct').textContent        = pct + '%';
-    document.getElementById('nowNext').textContent        = nextTask ? nextTask.name + ' (' + fmtMin(parseTime(nextTask.time)) + ')' : (nextSec ? nextSec.emoji + ' ' + nextSec.label + ' (' + fmtMin(nextSec.startMin) + ')' : '🎉 Din khatam!');
+    document.getElementById('nowNext').textContent        = nextTask ? nextTask.name + ' (' + fmtMin(parseTime(nextTask.time)) + ')' : (nextSec ? nextSec.emoji + ' ' + nextSec.label + ' (' + fmtMin(nextSec.startMin) + ')' : '🎉 Aaj Ka Karya Poora Hua!');
 
     const el = document.getElementById('item-' + curTask.id);
     if (el) el.classList.add('active-now');
@@ -482,7 +482,7 @@ function updateClock() {
 
   } else {
     const remToSleep = cur <= 1320 ? 1320 - cur : 0;
-    document.getElementById('nowSectionTag').textContent  = 'Din Khatam! 🎉';
+    document.getElementById('nowSectionTag').textContent  = '🎉 Aaj Ka Karya Poora Hua';
     document.getElementById('nowTaskTitle').textContent   = '😴 So Jao — Bahut achha kiya aaj!';
     document.getElementById('nowFrom').textContent        = '10:00 PM';
     document.getElementById('nowTo').textContent          = '6:00 AM';
